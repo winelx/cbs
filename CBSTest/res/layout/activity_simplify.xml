@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="#247ACD" >
+
+        <ImageButton
+            android:id="@+id/simplify_img_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="@color/transparent"
+            android:padding="10dp"/>
+
+        <TextView
+            android:id="@+id/simplify_title_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="简化新装"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/simplify_bt_Bluetooth"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/shape_simplify_button"
+        android:text="使用蓝牙设备读卡"
+        android:textColor="#04A7EA" />
+
+    <Button
+        android:id="@+id/simplify_bt_otg"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/shape_simplify_button"
+        android:text="使用OTG设备读卡"
+        android:textColor="#04A7EA" />
+
+    <Button
+        android:id="@+id/simplify_bt_nfc"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/shape_simplify_button"
+        android:text="手机NFC功能读卡"
+        android:textColor="#04A7EA" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="15dp"
+        android:text="操作步骤"
+        android:textColor="@color/blackberry"
+        android:textSize="16sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="4dp"
+        android:background="#DBDBDB" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" >
+
+            <ImageView
+                android:id="@+id/img_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_one"
+                android:layout_alignBottom="@+id/tv_one"
+                android:src="@drawable/loading" />
+
+            <TextView
+                android:id="@id/tv_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="4dp"
+                android:layout_toRightOf="@+id/img_one"
+                android:text="连接USB接口,打开开关"
+                android:textColor="@color/blackberry"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_one"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="3dp"
+                android:layout_below="@+id/tv_one"
+                android:textColor="#727272"
+                android:text="把身份证识别器连接USB进行充电,打开识别器电源开关或把开关置于Bluetooth处,保证指示灯亮"
+                android:textSize="12sp" />
+        </RelativeLayout>
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" >
+
+            <ImageView
+                android:id="@+id/img_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_two"
+                android:layout_alignBottom="@+id/tv_two"
+                android:src="@drawable/loading" />
+
+            <TextView
+                android:id="@id/tv_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="4dp"
+                android:layout_toRightOf="@+id/img_two"
+                android:text="连接蓝牙"
+                android:textColor="@color/blackberry"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_cls_read"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_two"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="3dp"
+                android:layout_below="@+id/tv_two"
+                android:textColor="#727272"
+                android:text="点击[读取身份证信息]按钮,选择打开蓝牙,选择对应的蓝牙名称进行连接,例如武汉精伦蓝牙名称:iD230-V2.或iD230-V4.0;南京亿数蓝牙名称:BT+条形码的后6位数字或YSBT."
+                android:textSize="12sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_cls_read"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="3dp"
+                android:layout_below="@+id/tv_cls_read"
+                android:textColor="#727272"
+                android:text="蓝牙配对秘钥"
+                android:textSize="12sp" />
+        </RelativeLayout>
+        
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" >
+
+            <ImageView
+                android:id="@+id/img_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tv_three"
+                android:layout_alignBottom="@+id/tv_three"
+                android:src="@drawable/loading" />
+
+            <TextView
+                android:id="@id/tv_three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="4dp"
+                android:layout_toRightOf="@+id/img_three"
+                android:text="读取身份证信息"
+                android:textColor="@color/blackberry"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_three"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="3dp"
+                android:layout_below="@+id/tv_three"
+                android:textColor="#727272"
+                android:text="把身份证放到身份证识别器上,点击[读取身份证信息]按钮进行读取"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

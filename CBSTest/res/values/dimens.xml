@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16.0dip</dimen>
+    <dimen name="activity_vertical_margin">16.0dip</dimen>
+    <dimen name="title_height">48.0dip</dimen>
+    <dimen name="title_button_height">40.0dip</dimen>
+    <dimen name="title_rightButton_padding">8.0dip</dimen>
+    <dimen name="title_text_size">12.0sp</dimen>
+    <dimen name="padding_left">10.0dip</dimen>
+    <dimen name="slidingmenu_offset">80.0dip</dimen>
+    <dimen name="shadow_width">15.0dip</dimen>
+    <dimen name="slidingmenu_padding">20.0dip</dimen>
+    <dimen name="list_head_item_height">35.0dip</dimen>
+    <dimen name="list_head_item_double_height">71.0dip</dimen>
+    <dimen name="list_item_min_height">35.0dip</dimen>
+    <dimen name="list_item_min_width">160.0dip</dimen>
+    <dimen name="list_item_tv_width">120.0dip</dimen>
+    <dimen name="list_item_tv_double_width">242.0dip</dimen>
+    <dimen name="list_item_group_width">120.0dip</dimen>
+    <dimen name="list_item_package_width">200.0dip</dimen>
+    <dimen name="widget_between_widget_margin">8.0dip</dimen>
+    <dimen name="widget_between_widget_small_margin">4.0dip</dimen>
+    <dimen name="layout_minheight">48.0dip</dimen>
+    <dimen name="text_size_16">16.0sp</dimen>
+    <dimen name="text_size_15">15.0sp</dimen>
+    <dimen name="text_size_14">14.0sp</dimen>
+    <dimen name="text_size_13">13.0sp</dimen>
+    <dimen name="text_size_12">12.0sp</dimen>
+</resources>

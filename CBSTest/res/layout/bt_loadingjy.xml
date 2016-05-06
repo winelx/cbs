@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="#247ACD"
+            android:orientation="horizontal" >
+
+            <ImageButton
+                android:id="@+id/simplify_img_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@color/transparent"
+                android:src="@drawable/previous" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:text="信通身份识别"
+                android:textColor="@color/white"
+                android:textSize="15dp" />
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@color/transparent" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_info"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_cls_read"
+            android:layout_below="@+id/tv_cls_read"
+            android:gravity="center"
+            android:textColor="#727272"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="22dp"
+            android:background="@drawable/shape_simplify_button"
+            android:text="使用蓝牙设备读卡"
+            android:textColor="#04A7EA" />
+
+        <Button
+            android:id="@+id/addotg_button"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/shape_simplify_button"
+            android:text="使用OTG设备读卡"
+            android:textColor="#04A7EA" />
+
+        <Button
+            android:id="@+id/addnfc_button"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/shape_simplify_button"
+            android:text="手机NFC功能读卡"
+            android:textColor="#04A7EA" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="15dp"
+            android:text="操作步骤"
+            android:textColor="@color/blackberry"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="4dp"
+            android:background="#DBDBDB" />
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" >
+
+                    <ImageView
+                        android:id="@+id/img_one"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/tv_one"
+                        android:layout_alignTop="@+id/tv_one"
+                        android:src="@drawable/img_one" />
+
+                    <TextView
+                        android:id="@id/tv_one"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="4dp"
+                        android:layout_toRightOf="@+id/img_one"
+                        android:text="使用蓝牙设备读卡"
+                        android:textColor="@color/blackberry"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/tv_one"
+                        android:layout_below="@+id/tv_one"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="3dp"
+                        android:text="亿数蓝牙名称:BT+条形码后6位数字,密钥:0000或1234.打开设备放置身份证.点击搜索蓝牙设备按钮选择蓝牙,点击使用蓝牙设备读卡配对读卡.如配对失败,可到手机蓝牙内配对设备,app内重新选择亿数蓝牙."
+                        android:textColor="#727272"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp" >
+
+                    <ImageView
+                        android:id="@+id/img_two"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/tv_two"
+                        android:layout_alignTop="@+id/tv_two"
+                        android:src="@drawable/img_two" />
+
+                    <TextView
+                        android:id="@id/tv_two"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="4dp"
+                        android:layout_toRightOf="@+id/img_two"
+                        android:text="使用OTG设备读卡"
+                        android:textColor="@color/blackberry"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_cls_read"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/tv_two"
+                        android:layout_below="@+id/tv_two"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="3dp"
+                        android:text="手机需支持OTG功能且OTG线连接亿数识别器和手机,打开亿数识别器,身份证放到设备相应区域.点击使用OTG设备读卡按钮等待读取完成"
+                        android:textColor="#727272"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp" >
+
+                    <ImageView
+                        android:id="@+id/img_three"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/tv_three"
+                        android:layout_alignTop="@+id/tv_three"
+                        android:src="@drawable/img_three" />
+
+                    <TextView
+                        android:id="@id/tv_three"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="4dp"
+                        android:layout_toRightOf="@+id/img_three"
+                        android:text="使用NFC功能读卡"
+                        android:textColor="@color/blackberry"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/tv_three"
+                        android:layout_below="@+id/tv_three"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="3dp"
+                        android:text="手机需支持NFC功能并在手机设置中打开NFC功能.点击手机NFC功能读卡,将身份证放到手机NFC区域.待正确提示音后保持手机和身份证等待读取完成."
+                        android:textColor="#727272"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/bt_select"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/shape_simplify_button"
+        android:text="搜索蓝牙设备"
+        android:textColor="#04A7EA" />
+
+</RelativeLayout>
