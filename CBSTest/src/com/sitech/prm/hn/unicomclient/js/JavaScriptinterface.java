@@ -132,13 +132,21 @@ public class JavaScriptinterface {
 		((Activity) activity).startActivityForResult(intent, 11);
 	}
 
+	// public void ABC(String str, String succfun, String failfun) {
+	// application.success = succfun;
+	// application.fail = failfun;
+	// Intent intent = new Intent(activity, Popwindows.class);
+	// intent.putExtra("loginTicket", str);
+	// ((Activity) activity).startActivityForResult(intent, 31);
+	// }
+
 	// readcardtwo
 	public void camera(String str, String succfun, String failfun) {
 		application.success = succfun;
 		application.fail = failfun;
 		Intent intent = new Intent(activity, Popwindows.class);
-		intent.putExtra("identityCard", str);
-		((Activity) activity).startActivityForResult(intent, 31);
+		intent.putExtra("loginTicket", str);
+		((Activity) activity).startActivityForResult(intent, 11);
 	}
 
 	public void checkVersion(String str, String succfun, String failfun) {

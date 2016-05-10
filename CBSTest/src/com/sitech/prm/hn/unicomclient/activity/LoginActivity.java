@@ -31,17 +31,16 @@ import android.content.SharedPreferences;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
@@ -49,7 +48,16 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
 import com.cbstest.unicomclient.R;
 import com.sitech.prm.hn.unicomclient.js.JavaScriptinterface;
 import com.sitech.prm.hn.unicomclient.net.AppConfig;
@@ -59,6 +67,13 @@ import com.sitech.prm.hn.unicomclient.service.UploadPicListener;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class LoginActivity extends BaseActivity {
+	private String latitude, longitude = "none";
+	private double jingdu, weidu;
+	private LocationMode mCurrentMode;// 定位模式
+	BitmapDescriptor mCurrentMarker;// Marker图标
+	public MyLocationListenner myListener = new MyLocationListenner();
+	BaiduMap mBaiduMap;
+	private MapView mapView;
 	LocationClient mLocClient;
 	private WebView myWebView;
 	private Handler handler = new Handler() {
@@ -73,12 +88,65 @@ public class LoginActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
-		
+		baiduMap();// 百度定位
 		application.activityList.add(this);
 		MyApplication.getInstance().addActivity(this);
-			
+
 		mLocClient = new LocationClient(this);
 		init();
+	}
+
+	private void baiduMap() {
+
+		mCurrentMode = LocationMode.NORMAL;// 设置定位模式为普通
+		mCurrentMarker = BitmapDescriptorFactory// 构建mark图标
+				.fromResource(R.drawable.icon_marka);
+		// 地图初始化
+		mapView = (MapView) findViewById(R.id.my_location_bmapView);
+		mapView.setVisibility(View.GONE);
+		mBaiduMap = mapView.getMap();
+		// 定位初始化
+		mLocClient = new LocationClient(this);
+		mLocClient.registerLocationListener(myListener);// 注册监听函数：
+
+		LocationClientOption option = new LocationClientOption();
+		option.setCoorType("bd09ll");// 返回的定位结果是百度经纬度,默认值gcj02
+		option.setScanSpan(1000);// 设置发起定位请求的间隔时间为5000ms
+		option.setIsNeedAddress(true);// 返回的定位结果包含地址信息
+		option.setNeedDeviceDirect(true);// 返回的定位结果包含手机机头的方向
+		mLocClient.setLocOption(option);
+		mLocClient.start();
+
+	}
+
+	/**
+	 * 定位SDK监听函数
+	 */
+	public class MyLocationListenner implements BDLocationListener {
+
+		@Override
+		public void onReceiveLocation(BDLocation location) {
+			// map view 销毁后不在处理新接收的位置
+			if (location == null || mapView == null)
+				return;
+			MyLocationData locData = new MyLocationData.Builder()
+					.accuracy(location.getRadius())
+					// 此处设置开发者获取到的方向信息，顺时针0-360
+					.direction(100).latitude(location.getLatitude())
+					.longitude(location.getLongitude()).build();
+			mBaiduMap.setMyLocationData(locData);
+			// 经度
+			jingdu = location.getLatitude();
+			latitude = jingdu + ",";
+			latitude.split(",");
+			// 纬度
+			weidu = location.getLongitude();
+			longitude = weidu + ",";
+			longitude.split(",");
+		}
+
+		public void onReceivePoi(BDLocation poiLocation) {
+		}
 	}
 
 	@SuppressLint("JavascriptInterface")
@@ -155,6 +223,7 @@ public class LoginActivity extends BaseActivity {
 		});
 	}
 
+	@SuppressWarnings({ "unused", "unchecked" })
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -268,6 +337,18 @@ public class LoginActivity extends BaseActivity {
 			}
 			break;
 		case 11:
+			if (data != null) {
+				System.out.println("end========================="
+						+ System.currentTimeMillis());
+				String datas = data.getStringExtra("data");
+				application.webView.loadUrl("javascript:" + application.success
+						+ "('" + datas + "');");
+			} else {
+				application.webView.loadUrl("javascript:" + application.fail
+						+ "();");
+			}
+			break;
+		case 31:
 			if (data != null) {
 				System.out.println("end========================="
 						+ System.currentTimeMillis());

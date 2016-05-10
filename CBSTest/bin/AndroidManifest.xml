@@ -249,6 +249,10 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Black.NoTitleBar" >
         </activity>
+        <activity
+            android:name="com.sitech.prm.hn.unicomclient.activity.Popwindows"
+            android:theme="@style/myTransparent" >
+        </activity>
     </application>
 
 </manifest>

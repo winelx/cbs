@@ -7,24 +7,18 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cbstest.unicomclient.R;
 
 public class Popwindows extends Activity {
-	private Intent intent;
 	private static final int PHOTO_REQUEST_CAREMA = 5;// 拍照
-	private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
 	private static final int REQUESTCODE_PICK = 1;
 	private static final int REQUESTCODE_CUTTING = 2;
-	private Bitmap bitMap;
-	private Uri uritempFile;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +47,7 @@ public class Popwindows extends Activity {
 					pickIntent.setDataAndType(
 							MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 							"image/*");
-					startActivityForResult(pickIntent, REQUESTCODE_PICK);
+					startActivityForResult(pickIntent, 1);
 				}
 			}
 		});
@@ -72,7 +66,6 @@ public class Popwindows extends Activity {
 
 		if (requestCode == 5 // 拍照
 				&& resultCode == Activity.RESULT_OK) {
-
 			Bundle bundle = datas.getExtras();
 			// 获取相机返回的数据，并转换为图片格式s
 			Bitmap bitmap = (Bitmap) bundle.get("data");
@@ -80,15 +73,16 @@ public class Popwindows extends Activity {
 			// .setImageBitmap(bitmap);// 将图片显示在ImageView里
 			JSONObject data = new JSONObject();
 			byte[] bytes = Bitmap2Bytes(bitmap);
+			// Toast.makeText(getApplicationContext(), "长度" + bytes.length,
+			// Toast.LENGTH_LONG).show();
 			data.put("img", bytes);// 图片bytes流
 			Intent intent = new Intent();
 			intent.putExtra("data", data.toString());
-			setResult(31, intent);
+			setResult(11, intent);
 			finish();
 
 		} else {
-
-			if (requestCode == REQUESTCODE_PICK) {// 相册
+			if (requestCode == 1 && requestCode == REQUESTCODE_PICK) {// 相册
 
 				if (datas == null || datas.getData() == null) {
 					return;
@@ -120,14 +114,14 @@ public class Popwindows extends Activity {
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);
 		// outputX outputY 是裁剪图片宽高
-		intent.putExtra("outputX", 150);
-		intent.putExtra("outputY", 150);
+		intent.putExtra("outputX", 200);
+		intent.putExtra("outputY", 200);
 		intent.putExtra("return-data", true);
 		startActivityForResult(intent, REQUESTCODE_CUTTING);
 	}
 
 	/**
-	 * 192. * 保存裁剪之后的图片数据 193. * @param picdata 194.
+	 * 保存裁剪之后的图片数据
 	 */
 	private void setPicToView(Intent picdata) {
 		Bundle extras = picdata.getExtras();
@@ -135,24 +129,24 @@ public class Popwindows extends Activity {
 			Bitmap photo = extras.getParcelable("data");
 
 			/**
-			 * 下面注释的方法是将裁剪之后的图片以Base64Coder的字符方式上 传到服务器，QQ头像上传采用的方法跟这个类似
+			 * 下面注释的方法是将裁剪之后的图片上传
 			 */
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+			photo.compress(Bitmap.CompressFormat.JPEG, 10, stream);
 			byte[] bytes = stream.toByteArray(); // 将图片流以字符串形式存储下来
+
 			JSONObject data = new JSONObject();
 			data.put("img", bytes);// 图片bytes流
 			Intent intent = new Intent();
 			intent.putExtra("data", data.toString());
-			//
-			setResult(31, intent);// 回调
+			setResult(11, intent);// 回调
 			finish();
 		}
 	}
 
 	public byte[] Bitmap2Bytes(Bitmap bm) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		bm.compress(Bitmap.CompressFormat.PNG, 10, baos);
+		bm.compress(Bitmap.CompressFormat.JPEG, 10, baos);
 		return baos.toByteArray();
 	}
 
