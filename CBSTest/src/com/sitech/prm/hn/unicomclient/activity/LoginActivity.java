@@ -22,6 +22,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,6 +49,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
@@ -56,8 +58,8 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
+import com.baidu.mapapi.map.MyLocationData;
 import com.cbstest.unicomclient.R;
 import com.sitech.prm.hn.unicomclient.js.JavaScriptinterface;
 import com.sitech.prm.hn.unicomclient.net.AppConfig;
@@ -65,30 +67,37 @@ import com.sitech.prm.hn.unicomclient.service.HttpServive;
 import com.sitech.prm.hn.unicomclient.service.UpdateService;
 import com.sitech.prm.hn.unicomclient.service.UploadPicListener;
 
-@SuppressLint("SetJavaScriptEnabled")
+@SuppressLint({ "SetJavaScriptEnabled", "HandlerLeak" })
 public class LoginActivity extends BaseActivity {
-	private String latitude, longitude = "none";
+	@SuppressWarnings("unused")
+	private String longitude, latitude = null;
+	private SharedPreferences spf;
+	@SuppressWarnings("unused")
 	private double jingdu, weidu;
+	@SuppressWarnings("unused")
 	private LocationMode mCurrentMode;// 定位模式
 	BitmapDescriptor mCurrentMarker;// Marker图标
 	public MyLocationListenner myListener = new MyLocationListenner();
 	BaiduMap mBaiduMap;
 	private MapView mapView;
 	LocationClient mLocClient;
+	private FileStorage filestorage;
+	private String FileName = "Storage.txt";
+	JSONObject map;
 	private WebView myWebView;
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			super.handleMessage(msg);
 		}
 	};
 
+	@SuppressWarnings("static-access")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
-		baiduMap();// 百度定位
+
 		application.activityList.add(this);
 		MyApplication.getInstance().addActivity(this);
 
@@ -110,8 +119,10 @@ public class LoginActivity extends BaseActivity {
 		mLocClient.registerLocationListener(myListener);// 注册监听函数：
 
 		LocationClientOption option = new LocationClientOption();
+		int span = 3600;
+		option.setScanSpan(span);//
 		option.setCoorType("bd09ll");// 返回的定位结果是百度经纬度,默认值gcj02
-		option.setScanSpan(1000);// 设置发起定位请求的间隔时间为5000ms
+		// option.setScanSpan(t);// 设置发起定位请求的间隔时间为5000ms
 		option.setIsNeedAddress(true);// 返回的定位结果包含地址信息
 		option.setNeedDeviceDirect(true);// 返回的定位结果包含手机机头的方向
 		mLocClient.setLocOption(option);
@@ -136,13 +147,9 @@ public class LoginActivity extends BaseActivity {
 					.longitude(location.getLongitude()).build();
 			mBaiduMap.setMyLocationData(locData);
 			// 经度
-			jingdu = location.getLatitude();
-			latitude = jingdu + ",";
-			latitude.split(",");
+			latitude = location.getLatitude() + "";
 			// 纬度
-			weidu = location.getLongitude();
-			longitude = weidu + ",";
-			longitude.split(",");
+			longitude = location.getLongitude() + "";
 		}
 
 		public void onReceivePoi(BDLocation poiLocation) {
@@ -176,6 +183,7 @@ public class LoginActivity extends BaseActivity {
 		SharedPreferences preferences = this.getSharedPreferences(
 				"SHARE_APP_TAG", 0);
 		Boolean isFirst = preferences.getBoolean("FIRSTStart", true);
+		baiduMap();// 百度定位
 		// myWebView
 		// .loadUrl("http://testapp.170.com/pub-page/login1.html?ts="
 		// + ts);
@@ -187,9 +195,11 @@ public class LoginActivity extends BaseActivity {
 							+ ts);
 			Log.i("", "--------------第一次登陆");
 		} else {
+
 			myWebView.loadUrl("http://cbstest.170.com/b2b-page/login.html?ts="
 					+ ts);
 			Log.i("", "--------------第好几次登陆");
+
 		}
 
 		/*
@@ -206,7 +216,6 @@ public class LoginActivity extends BaseActivity {
 
 			@Override
 			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				// TODO 自动生成的方法存根
 				super.onPageStarted(view, url, favicon);
 			}
 		});
@@ -215,15 +224,19 @@ public class LoginActivity extends BaseActivity {
 			@Override
 			public boolean onJsAlert(WebView view, String url, String message,
 					JsResult result) {
-				Toast.makeText(getApplicationContext(), message,
-						Toast.LENGTH_SHORT).show();
+				// Toast.makeText(getApplicationContext(), message,
+				// Toast.LENGTH_SHORT).show();
 				result.confirm();
 				return true;
 			}
 		});
 	}
 
-	@SuppressWarnings({ "unused", "unchecked" })
+	public SharedPreferences getSharedPreferences(String name, Double latitude2) {
+		return null;
+	}
+
+	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -341,6 +354,7 @@ public class LoginActivity extends BaseActivity {
 				System.out.println("end========================="
 						+ System.currentTimeMillis());
 				String datas = data.getStringExtra("data");
+
 				application.webView.loadUrl("javascript:" + application.success
 						+ "('" + datas + "');");
 			} else {
@@ -523,7 +537,7 @@ public class LoginActivity extends BaseActivity {
 				|| url[0]
 						.equals("http://cbsapp.170.com/b2b-page/channelManage.html")
 				|| url[0]
-						.equals("http://cbsapp.170.com/b2b-page/channelStatic.html")
+						.equals("http://cbsapp.170.com/b28/b-page/channelStatic.html")
 				|| url[0].equals("http://cbsapp.170.com/b2b-page/myMenu.html")
 				|| url[0]
 						.equals("http://cbsapp.170.com/b2b-page/businessManage.html")
@@ -716,15 +730,6 @@ public class LoginActivity extends BaseActivity {
 		return intent;
 	}
 
-	// message.what=0;
-	// handler.sendMessage(message);
-	//
-	//
-	// Message message1=new Message();
-	// message1.what=1;
-	// handler.sendMessage(message1);
-	//
-	//
 	private Handler jdHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {

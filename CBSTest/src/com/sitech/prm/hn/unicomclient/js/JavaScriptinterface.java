@@ -3,8 +3,6 @@ package com.sitech.prm.hn.unicomclient.js;
 import java.net.URLDecoder;
 import java.util.regex.Pattern;
 
-import sunrise.nfc.SRnfcCardReader;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,7 +16,6 @@ import com.sitech.prm.hn.unicomclient.activity.JYreader;
 import com.sitech.prm.hn.unicomclient.activity.MipcaActivityCapture;
 import com.sitech.prm.hn.unicomclient.activity.Popwindows;
 import com.sitech.prm.hn.unicomclient.activity.ReadCardInfo;
-import com.sitech.prm.hn.unicomclient.activity.SRreder;
 import com.sitech.prm.hn.unicomclient.activity.SkipDownload;
 import com.sitech.prm.hn.unicomclient.activity.SrReaderCard;
 import com.sitech.prm.hn.unicomclient.activity.TakeCamera;
@@ -116,14 +113,6 @@ public class JavaScriptinterface {
 		((Activity) activity).startActivityForResult(intent, 11);
 	}
 
-	public void readcardSR(String str, String succfun, String failfun) {
-		application.success = succfun;
-		application.fail = failfun;
-		Intent intent = new Intent(activity, SrReaderCard.class);
-		intent.putExtra("loginTicket", str);
-		((Activity) activity).startActivityForResult(intent, 11);
-	}
-
 	public void readcardJY(String str, String succfun, String failfun) {
 		application.success = succfun;
 		application.fail = failfun;
@@ -132,15 +121,14 @@ public class JavaScriptinterface {
 		((Activity) activity).startActivityForResult(intent, 11);
 	}
 
-	// public void ABC(String str, String succfun, String failfun) {
-	// application.success = succfun;
-	// application.fail = failfun;
-	// Intent intent = new Intent(activity, Popwindows.class);
-	// intent.putExtra("loginTicket", str);
-	// ((Activity) activity).startActivityForResult(intent, 31);
-	// }
+	public void readcardSR(String str, String succfun, String failfun) {
+		application.success = succfun;
+		application.fail = failfun;
+		Intent intent = new Intent(activity, SrReaderCard.class);
+		intent.putExtra("loginTicket", str);
+		((Activity) activity).startActivityForResult(intent, 11);
+	}
 
-	// readcardtwo
 	public void camera(String str, String succfun, String failfun) {
 		application.success = succfun;
 		application.fail = failfun;

@@ -1,8 +1,11 @@
 package com.sitech.prm.hn.unicomclient.activity;
 
+import java.io.IOException;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,6 +22,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
 import com.caihua.cloud.common.User;
 import com.caihua.cloud.common.enumerate.ConnectType;
 import com.caihua.cloud.common.reader.IDReader;
@@ -36,11 +49,22 @@ public class JYreader extends Activity {
 	private Button lanya, otg, bt_select, addnfc_button;
 	String state = "1";
 	CustomProgressDialog dialog;
-	private CustomDialog.Builder builder;
-	private IDReader reader;
 	private User user;
-	private BluetoothAdapter btAdapt;
+	private IDReader reader;
 	private TextView title;
+	private BluetoothAdapter btAdapt;
+	private FileStorage filestorage;
+	private CustomDialog.Builder builder;
+	private String FileName = "Storage.txt";
+
+	private LocationMode mCurrentMode;// 定位模式
+	BitmapDescriptor mCurrentMarker;// Marker图标
+	public MyLocationListenner myListener = new MyLocationListenner();
+	BaiduMap mBaiduMap;
+	String latitude, longitude = "null";
+	@SuppressWarnings("unused")
+	private MapView mapView;
+	LocationClient mLocClient;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +85,6 @@ public class JYreader extends Activity {
 		loginTicket = getIntent().getExtras().getString("loginTicket");
 		BitmapDecoder.InitDecoder(getApplicationContext());// 解码器初始化
 		// 蓝牙设备的点击事件
-		lanya.setEnabled(true);
 		lanya.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -83,7 +106,7 @@ public class JYreader extends Activity {
 					dialog = new CustomProgressDialog(JYreader.this, "正在读卡",
 							R.anim.frame);
 					dialog.setCanceledOnTouchOutside(false);
-					dialog.setCancelable(false);
+					// dialog.setCancelable(false);
 					dialog.show();
 				}
 			};
@@ -118,6 +141,58 @@ public class JYreader extends Activity {
 		});
 	};
 
+	private void baiduMap() {
+
+		mCurrentMode = LocationMode.NORMAL;// 设置定位模式为普通
+		mCurrentMarker = BitmapDescriptorFactory// 构建mark图标
+				.fromResource(R.drawable.icon_marka);
+		// 地图初始化
+		mapView = (MapView) findViewById(R.id.my_location_bmapView);
+		mapView.setVisibility(View.GONE);
+		mBaiduMap = mapView.getMap();
+		// 定位初始化
+		mLocClient = new LocationClient(this);
+		mLocClient.registerLocationListener(myListener);// 注册监听函数：
+
+		LocationClientOption option = new LocationClientOption();
+		option.setCoorType("bd09ll");// 返回的定位结果是百度经纬度,默认值gcj02
+		option.setScanSpan(10000);// 设置发起定位请求的间隔时间为5000ms
+		option.setIsNeedAddress(true);// 返回的定位结果包含地址信息
+		option.setNeedDeviceDirect(true);// 返回的定位结果包含手机机头的方向
+		mLocClient.setLocOption(option);
+		mLocClient.start();
+
+	}
+
+	/**
+	 * 定位SDK监听函数
+	 */
+	public class MyLocationListenner implements BDLocationListener {
+
+		@Override
+		public void onReceiveLocation(BDLocation location) {
+			// map view 销毁后不在处理新接收的位置
+			if (location == null || mapView == null)
+				return;
+			MyLocationData locData = new MyLocationData.Builder()
+					.accuracy(location.getRadius())
+					// 此处设置开发者获取到的方向信息，顺时针0-360
+					.direction(100).latitude(location.getLatitude())
+					.longitude(location.getLongitude()).build();
+			mBaiduMap.setMyLocationData(locData);
+			// 经度
+			latitude = location.getLatitude() + "";
+			// 纬度
+			longitude = location.getLongitude() + "";
+			Toast.makeText(getApplicationContext(), latitude + "_" + longitude,
+					0).show();
+			
+		}
+
+		public void onReceivePoi(BDLocation poiLocation) {
+		}
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -131,6 +206,7 @@ public class JYreader extends Activity {
 				new AlertDialog.Builder(JYreader.this).setTitle("提示")
 						.setMessage("未设置蓝牙读卡设备！").setPositiveButton("确定", null)
 						.show();
+				dialog.dismiss();
 				return;
 			}
 		}
@@ -154,6 +230,7 @@ public class JYreader extends Activity {
 			case IDReader.MESSAGE_CONNECT_FAILED:
 				dialog.dismiss();
 				if (reader.strErrorMsg != null) {
+					dialog.dismiss();
 					builder = new CustomDialog.Builder(JYreader.this);
 					builder.setTitle("提示");
 					builder.setMessage("读卡失败");
@@ -170,7 +247,6 @@ public class JYreader extends Activity {
 				}
 			case IDReader.MESSAGE_READCARD_COMPLETED:// 读卡完成
 
-				lanya.setEnabled(false);
 				if (msg.obj != null) {
 					Toast.makeText(getApplicationContext(), "读卡成功",
 							Toast.LENGTH_SHORT).show();
@@ -186,18 +262,17 @@ public class JYreader extends Activity {
 					data.put("Address", user.address);// 地址
 					data.put("CardNo", user.id);// 身份证号码
 					data.put("Police", user.issue);// 签发机关
+					data.put("deviceType", "JY");
 					data.put("Activity", exper);// 有效期限，格式：yyyymmddyyyymmdd
-					// bytes = getCode(user.headImg);
 
 					Intent intent = new Intent();
 					intent.putExtra("data", data.toString());
 					setResult(112, intent);
-
-					mHandler.sendEmptyMessageDelayed(22222, 2000);
+					finish();
 					break;
 				} else {
 					builder = new CustomDialog.Builder(JYreader.this);
-					builder.setMessage("没有连接设备");
+					builder.setMessage("服务器连接异常");
 					builder.setTitle("提示");
 					builder.setNegativeButton(
 							"确定",
@@ -208,13 +283,9 @@ public class JYreader extends Activity {
 								}
 							});
 					builder.create().show();
-					lanya.setEnabled(false);
+					dialog.dismiss();
 					break;
 				}
-			case 22222:
-				dialog.dismiss();
-				finish();
-				break;
 			}
 		}
 

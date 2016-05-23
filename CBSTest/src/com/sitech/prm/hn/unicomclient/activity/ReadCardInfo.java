@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,6 +38,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
+import com.baidu.mapapi.map.MyLocationData;
 import com.cbstest.unicomclient.R;
 import com.otg.idcard.OTGReadCardAPI;
 
@@ -64,7 +75,7 @@ public class ReadCardInfo extends Activity {
 	public static final int MESSAGE_VALID_NFCBUTTON = 16;
 	public static final int MESSAGE_VALID_BTBUTTON = 17;
 	public static final int MESSAGE_VALID_PROCESS = 1001;
-	Button lanya,otg,nfc,bt_select;
+	Button lanya, otg, nfc, bt_select;
 	TextView message;
 	String state = "1";
 	NfcAdapter nfcAdapter;
@@ -73,11 +84,21 @@ public class ReadCardInfo extends Activity {
 	private String loginTicket;
 	private NfcAdapter adapter;
 	private CustomDialog.Builder builder;
+	private LocationMode mCurrentMode;// 定位模式
+	BitmapDescriptor mCurrentMarker;// Marker图标
+	public MyLocationListenner myListener = new MyLocationListenner();
+	BaiduMap mBaiduMap;
+	String latitude, longitude = "null";
+	@SuppressWarnings("unused")
+	private MapView mapView;
+	LocationClient mLocClient;
+	private Activity Login;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.bt_loading);
+		baiduMap();// 百度定位
 		NfcManager manager = (NfcManager) getApplication().getSystemService(
 				getApplication().NFC_SERVICE);
 		adapter = manager.getDefaultAdapter();
@@ -88,13 +109,14 @@ public class ReadCardInfo extends Activity {
 		otg = (Button) findViewById(R.id.addotg_button);
 		nfc = (Button) findViewById(R.id.addnfc_button);
 		bt_select = (Button) findViewById(R.id.bt_select);
-		simplify_img_back=(ImageView) findViewById(R.id.simplify_img_back);
+		simplify_img_back = (ImageView) findViewById(R.id.simplify_img_back);
 		simplify_img_back.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-			finish();
+				finish();
 			}
 		});
+
 		IPArray = new ArrayList<String>();
 		IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 		registerReceiver(mUsbReceiver, filter);
@@ -108,6 +130,10 @@ public class ReadCardInfo extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				ObjectAnimator oa = ObjectAnimator.ofFloat(lanya, "alpha", 0f,
+						1f);
+				oa.setDuration(300);
+				oa.start();
 				ReadCardAPI = new OTGReadCardAPI(getApplicationContext(),
 						IPArray);
 				if (mAdapter != null) {
@@ -117,7 +143,7 @@ public class ReadCardInfo extends Activity {
 				if (!btAdapt.isEnabled()) {
 					btAdapt.enable();
 				}
-				if ( addressmac== null) {
+				if (addressmac == null) {
 					Intent serverIntent2 = new Intent(ReadCardInfo.this,
 							DeviceListActivity.class);
 					startActivityForResult(serverIntent2, SETTING_BT);
@@ -141,6 +167,10 @@ public class ReadCardInfo extends Activity {
 		otg.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				ObjectAnimator oa = ObjectAnimator
+						.ofFloat(otg, "alpha", 0f, 1f);
+				oa.setDuration(300);
+				oa.start();
 				ReadCardAPI = new OTGReadCardAPI(getApplicationContext(),
 						IPArray);
 				if (mAdapter != null) {
@@ -158,6 +188,7 @@ public class ReadCardInfo extends Activity {
 		bt_select.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
+
 				// Bluetooth();
 				Intent serverIntent2 = new Intent(ReadCardInfo.this,
 						DeviceListActivity.class);
@@ -168,6 +199,10 @@ public class ReadCardInfo extends Activity {
 		nfc.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				ObjectAnimator oa = ObjectAnimator
+						.ofFloat(nfc, "alpha", 0f, 1f);
+				oa.setDuration(300);
+				oa.start();
 				ReadCardAPI = new OTGReadCardAPI(getApplicationContext(),
 						IPArray);
 				if (adapter != null && adapter.isEnabled()) {
@@ -189,6 +224,58 @@ public class ReadCardInfo extends Activity {
 			init_NFC();
 		}
 	};
+
+	private void baiduMap() {
+
+		mCurrentMode = LocationMode.NORMAL;// 设置定位模式为普通
+		mCurrentMarker = BitmapDescriptorFactory// 构建mark图标
+				.fromResource(R.drawable.icon_marka);
+		// 地图初始化
+		mapView = (MapView) findViewById(R.id.my_location_bmapView);
+		mapView.setVisibility(View.GONE);
+		mBaiduMap = mapView.getMap();
+		// 定位初始化
+		mLocClient = new LocationClient(this);
+		mLocClient.registerLocationListener(myListener);// 注册监听函数：
+
+		LocationClientOption option = new LocationClientOption();
+		option.setCoorType("bd09ll");// 返回的定位结果是百度经纬度,默认值gcj02
+		option.setScanSpan(10000);// 设置发起定位请求的间隔时间为5000ms
+		option.setIsNeedAddress(true);// 返回的定位结果包含地址信息
+		option.setNeedDeviceDirect(true);// 返回的定位结果包含手机机头的方向
+		mLocClient.setLocOption(option);
+		mLocClient.start();
+
+	}
+
+	/**
+	 * 定位SDK监听函数
+	 */
+	public class MyLocationListenner implements BDLocationListener {
+
+		@Override
+		public void onReceiveLocation(BDLocation location) {
+			// map view 销毁后不在处理新接收的位置
+			if (location == null || mapView == null)
+				return;
+			MyLocationData locData = new MyLocationData.Builder()
+					.accuracy(location.getRadius())
+					// 此处设置开发者获取到的方向信息，顺时针0-360
+					.direction(100).latitude(location.getLatitude())
+					.longitude(location.getLongitude()).build();
+			mBaiduMap.setMyLocationData(locData);
+			// 经度
+			latitude = location.getLatitude() + "";
+			// 纬度
+			longitude = location.getLongitude() + "";
+			Toast.makeText(getApplicationContext(), latitude + "_" + longitude,
+					0).show();
+
+		}
+
+		public void onReceivePoi(BDLocation poiLocation) {
+		}
+	}
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -234,7 +321,7 @@ public class ReadCardInfo extends Activity {
 		return false;
 	}
 
-	@Override 
+	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == SETTING_BT) {
@@ -292,7 +379,7 @@ public class ReadCardInfo extends Activity {
 					dialog = new CustomProgressDialog(ReadCardInfo.this,
 							"正在读卡", R.anim.frame);
 					dialog.setCanceledOnTouchOutside(false);
-					//dialog.setCancelable(false);
+					// dialog.setCancelable(false);
 					dialog.show();
 					new Thread() {
 						public void run() {
@@ -428,6 +515,7 @@ public class ReadCardInfo extends Activity {
 	@Override
 	protected void onDestroy() {
 		this.unregisterReceiver(mUsbReceiver);
+		finish();
 		super.onDestroy();
 	}
 
@@ -498,8 +586,11 @@ public class ReadCardInfo extends Activity {
 			data.put("Address", ReadCardAPI.Address().trim());// 地址
 			data.put("CardNo", ReadCardAPI.CardNo());// 身份证号码
 			data.put("Police", ReadCardAPI.Police().trim());// 签发机关
-			data.put("Activity", ReadCardAPI.Activity());// 有效期限，格式：yyyymmddyyyymmdd
+			data.put("Activity", ReadCardAPI.Activity());// 有效期限，格式：;
 			data.put("key", ReadCardAPI.Key());// key
+			data.put("latitude", latitude);
+			data.put("longitude", longitude);
+
 			byte[] bytes = getCode(ReadCardAPI.GetImage());
 			data.put("img", bytes);// 图片bytes流
 			data.put("deviceNo", ReadCardAPI.Serialcode());// DEVICEnO

@@ -9,7 +9,18 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationData;
+import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
 import com.cbstest.unicomclient.R;
+import com.sitech.prm.hn.unicomclient.activity.JYreader.MyLocationListenner;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -77,6 +88,15 @@ public class Blutoothreader extends Activity {
 	private Intent intent;
 	CustomProgressDialog dialog;
 	private NfcAdapter adapter;
+
+	private LocationMode mCurrentMode;// 定位模式
+	BitmapDescriptor mCurrentMarker;// Marker图标
+	public MyLocationListenner myListener = new MyLocationListenner();
+	BaiduMap mBaiduMap;
+	String latitude, longitude = "null";
+	@SuppressWarnings("unused")
+	private MapView mapView;
+	LocationClient mLocClient;
 
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -403,6 +423,58 @@ public class Blutoothreader extends Activity {
 		}
 	};
 
+	private void baiduMap() {
+
+		mCurrentMode = LocationMode.NORMAL;// 设置定位模式为普通
+		mCurrentMarker = BitmapDescriptorFactory// 构建mark图标
+				.fromResource(R.drawable.icon_marka);
+		// 地图初始化
+		mapView = (MapView) findViewById(R.id.my_location_bmapView);
+		mapView.setVisibility(View.GONE);
+		mBaiduMap = mapView.getMap();
+		// 定位初始化
+		mLocClient = new LocationClient(this);
+		mLocClient.registerLocationListener(myListener);// 注册监听函数：
+
+		LocationClientOption option = new LocationClientOption();
+		option.setCoorType("bd09ll");// 返回的定位结果是百度经纬度,默认值gcj02
+		option.setScanSpan(10000);// 设置发起定位请求的间隔时间为5000ms
+		option.setIsNeedAddress(true);// 返回的定位结果包含地址信息
+		option.setNeedDeviceDirect(true);// 返回的定位结果包含手机机头的方向
+		mLocClient.setLocOption(option);
+		mLocClient.start();
+
+	}
+
+	/**
+	 * 定位SDK监听函数
+	 */
+	public class MyLocationListenner implements BDLocationListener {
+
+		@Override
+		public void onReceiveLocation(BDLocation location) {
+			// map view 销毁后不在处理新接收的位置
+			if (location == null || mapView == null)
+				return;
+			MyLocationData locData = new MyLocationData.Builder()
+					.accuracy(location.getRadius())
+					// 此处设置开发者获取到的方向信息，顺时针0-360
+					.direction(100).latitude(location.getLatitude())
+					.longitude(location.getLongitude()).build();
+			mBaiduMap.setMyLocationData(locData);
+			// 经度
+			latitude = location.getLatitude() + "";
+			// 纬度
+			longitude = location.getLongitude() + "";
+			Toast.makeText(getApplicationContext(), latitude + "_" + longitude,
+					0).show();
+
+		}
+
+		public void onReceivePoi(BDLocation poiLocation) {
+		}
+	}
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -573,7 +645,7 @@ public class Blutoothreader extends Activity {
 			byte[] bytes = getCode(identityCard.avatar);
 			// 加密串无
 			data.put("img", bytes);// 图片bytes流
-			data.put("deviceType", "TY");
+			data.put("deviceType", "XT");
 			Intent intent = new Intent();
 			intent.putExtra("data", data.toString());
 			setResult(112, intent);

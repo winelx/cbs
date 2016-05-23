@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//res/values/strings.xml=UTF-8
 encoding//src/com/mining/app/zxing/view/ViewfinderView.java=UTF-8
+encoding//src/com/sitech/prm/hn/unicomclient/activity/FileStorage.java=UTF-8
 encoding//src/com/sitech/prm/hn/unicomclient/bean/NetInterfaceBean.java=UTF-8
 encoding//src/com/sitech/prm/hn/unicomclient/common/StringUtil.java=UTF-8
 encoding//src/com/sitech/prm/hn/unicomclient/service/UpdateVersionService.java=UTF-8
